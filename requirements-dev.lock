@@ -22,6 +22,8 @@ certifi==2024.8.30
     # via requests
 charset-normalizer==3.4.0
     # via requests
+click==8.1.7
+    # via hackathon
 docstring-parser==0.16
     # via google-cloud-aiplatform
 google-api-core==2.21.0
@@ -88,7 +90,7 @@ jsonpointer==3.0.0
 langchain-core==0.3.11
     # via langchain-google-vertexai
 langchain-google-vertexai==2.0.5
-    # via 20241017-hackathon
+    # via hackathon
 langsmith==0.1.135
     # via langchain-core
 numpy==2.1.2

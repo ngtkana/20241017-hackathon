@@ -3,7 +3,10 @@ name = "hackathon"
 version = "0.1.0"
 description = "Add your description here"
 authors = [{ name = "Nagata Kana", email = "ngtkana@gmail.com" }]
-dependencies = ["langchain-google-vertexai>=2.0.5"]
+dependencies = [
+    "langchain-google-vertexai>=2.0.5",
+    "click>=8.1.7",
+]
 readme = "README.md"
 requires-python = ">= 3.8"
 
