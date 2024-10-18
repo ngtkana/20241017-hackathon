@@ -7,6 +7,7 @@ dependencies = [
     "langchain-google-vertexai>=2.0.5",
     "click>=8.1.7",
     "pandas>=2.2.3",
+    "flask>=3.0.3",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"

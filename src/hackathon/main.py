@@ -11,14 +11,19 @@ import click
 import pandas as pd
 
 @click.command()
-@click.option(
-    "--input",
+@click.argument(
+    'input',
     type=click.Path(path_type=Path, exists=True),
-    default="input/011dd18a-c571-4826-be22-f8be5e07cf1e/DrawingNumber.csv",
-    required=True,
+    default="input/011dd18a-c571-4826-be22-f8be5e07cf1e/DueDate.csv",
+)
+@click.argument(
+    'output',
+    type=click.Path(path_type=Path, exists=False),
+    default="output/011dd18a-c571-4826-be22-f8be5e07cf1e/DueDate.csv",
 )
 def main(
     input: Path,
+    output: Path,
 ):
     safety_settings = {
         HarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmBlockThreshold.BLOCK_NONE,
@@ -107,7 +112,7 @@ def main(
         "corrected": column_corrected
     })
     print(output_df)
-    output_df.to_csv("output.csv", index=False)
+    output_df.to_csv(output, index=False)
 
 if __name__ == "__main__":
     print("Start") 
