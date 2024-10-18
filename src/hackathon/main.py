@@ -7,8 +7,45 @@ from textwrap import dedent
 from langchain_core.messages import SystemMessage
 from langchain_core.output_parsers import JsonOutputParser
 from pathlib import Path
+from pydantic import BaseModel, Field, create_model
+from typing import Optional
+from langchain.output_parsers import PydanticOutputParser
+from langchain_core.output_parsers.pydantic import _PYDANTIC_FORMAT_INSTRUCTIONS
 import click
 import pandas as pd
+import json
+
+def create_default_response_model():
+    attributes = {
+        "original": (Optional[str], Field(description="given ocr text", required=False)),
+        "corrected": (Optional[str], Field(description="llm-corrected text", required=False)),
+    }
+    return create_model("Response", **attributes)
+
+
+class JapanizePydanticOutputParser(PydanticOutputParser):
+    """Parser with ensure_ascii=False for PydanticOutputParser"""
+
+    def get_format_instructions(self) -> str:
+        """Return the format instructions for the JSON output.
+
+        Returns:
+            The format instructions for the JSON output.
+        """
+        # Copy＾ schema to avoid altering original Pydantic schema.
+        schema = {k: v for k, v in self.pydantic_object.schema().items()}
+
+        # Remove extraneous fields.
+        reduced_schema = schema
+        if "title" in reduced_schema:
+            del reduced_schema["title"]
+        if "type" in reduced_schema:
+            del reduced_schema["type"]
+        # Ensure json in context is well-formed with double quotes.
+        schema_str = json.dumps(reduced_schema, ensure_ascii=False)
+
+        return _PYDANTIC_FORMAT_INSTRUCTIONS.format(schema=schema_str)
+
 
 @click.command()
 @click.argument(
@@ -46,19 +83,14 @@ def main(
     )
 
 
-    parser = JsonOutputParser()
+    schema = create_default_response_model()
+    parser = JapanizePydanticOutputParser(pydantic_object=schema)
     system_prompt = dedent(
         f"""
         You are a manufacturing expert.
         You will be given an image of a cell in the title block of a drawing and the OCR result.
         If the OCR result is incorrect, please output the correction result.
         If it is correct, please output it as is without making any changes.
-
-        Please output in JSON format as shown in the following example.
-        {{
-            "original": "'67-!-30-D",
-            "corrected": "'67-1-30-D",
-        }}
 
         Note that images often contain not only text but also surrounding borders. Be careful not to mistake the border for "1" or similar.        ## Schema
 
@@ -105,8 +137,8 @@ def main(
         human_message = [HumanMessage(content=target_messages)]
         result = chain.invoke({"messages": human_message})
         column_image_name.append(row.image_name)
-        column_original.append(result["original"])
-        column_corrected.append(result["corrected"])
+        column_original.append(result.original)
+        column_corrected.append(result.corrected)
 
     output_df = pd.DataFrame({
         "image_name": column_image_name,
