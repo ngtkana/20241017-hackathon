@@ -11,15 +11,15 @@
     <h1>Drawing ID Viewer</h1>
 
     {% for task in tasks %}
-    <h2>Tenant: {{ task.tenant_id }} ({{ task.attribute }})</h2>
+    <h2>{{ task.tenant_id }} ({{ task.attribute }})</h2>
     <ul>
         {% for drawing_id in task.ocr_miss %}
         <li>
-            <h3>OCR Miss: {{ drawing_id }}</h3>
-            <img src="/input/{{ task.tenant_id }}/{{ task.attribute }}/{{ drawing_id }}.png" alt="{{ drawing_id }}">
+            <h3>{{ drawing_id }}</h3>
+            <img src="/input/{{ task.tenant_id }}/{{ task.attribute }}/{{ drawing_id }}.png" alt="{{ drawing_id }}"
+                style="max-width: 400px; max-height: 400px; width: auto; height: auto;">
             <div>
-                <strong>Original:</strong> {{ task.json_data['original'] }}<br>
-                <strong>Corrected:</strong> {{ task.json_data['corrected'] }}
+                {{ task.json_data['original'] }} → {{ task.json_data['corrected'] }}
             </div>
         </li>
         {% endfor %}

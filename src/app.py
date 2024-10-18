@@ -34,6 +34,10 @@ def serve_image(filename):
 def index():
     for task in tasks:
         tenant_id = task['tenant_id']
+        for drawing_id in task['ocr_correct']:
+            json_path = os.path.join(JSON_DIR, tenant_id, "DrawingNumber", f"{drawing_id}.json")
+            with open(json_path) as f:
+                task['json_data'] = json.load(f)  # JSON データを事前にロード
         for drawing_id in task['ocr_miss']:
             json_path = os.path.join(JSON_DIR, tenant_id, "DrawingNumber", f"{drawing_id}.json")
             with open(json_path) as f:
