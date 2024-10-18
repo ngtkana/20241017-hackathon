@@ -12,19 +12,21 @@ import pandas as pd
 
 @click.command()
 @click.argument(
-    'input',
-    type=click.Path(path_type=Path, exists=True),
-    default="input/011dd18a-c571-4826-be22-f8be5e07cf1e/DueDate.csv",
+    'field_name',
+    type=str,
+    default="DueDate",
 )
 @click.argument(
-    'output',
-    type=click.Path(path_type=Path, exists=False),
-    default="output/011dd18a-c571-4826-be22-f8be5e07cf1e/DueDate.csv",
+    'tenant-id',
+    type=str,
+    default="011dd18a-c571-4826-be22-f8be5e07cf1e",
 )
 def main(
-    input: Path,
-    output: Path,
+    field_name: str,
+    tenant_id: str,
 ):
+    input = Path('input') / tenant_id / f'{field_name}.csv'
+    output = Path('output') / tenant_id / f'{field_name}.csv'
     safety_settings = {
         HarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmBlockThreshold.BLOCK_NONE,
         HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
